@@ -1,0 +1,52 @@
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: noroi_db
+    environment:
+      POSTGRES_USER: noroi
+      POSTGRES_PASSWORD: noroi_password
+      POSTGRES_DB: noroi_db
+      TZ: 'Asia/Tokyo'
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U noroi -d noroi_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  migrate:
+    image: migrate/migrate
+    container_name: noroi_migrate
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./migrations:/migrations
+    command: ["-path", "/migrations", "-database", "postgres://noroi:noroi_password@db:5432/noroi_db?sslmode=disable", "up"]
+    restart: "no"
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: noroi_api
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: noroi
+      DB_PASSWORD: noroi_password
+      DB_NAME: noroi_db
+      JWT_SECRET: your-secret-key-change-in-production
+      PORT: 8080
+    ports:
+      - "8081:8080"
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

@@ -136,7 +136,7 @@ export default function RegisterForm({ onRegister, onSwitchToLogin }: RegisterFo
               <option value="">選択</option>
               <option value="male">男性</option>
               <option value="female">女性</option>
-              <option value="other">その他</option>
+              <option value="unknown">不明</option>
             </select>
           </div>
         </div>

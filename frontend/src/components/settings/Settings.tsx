@@ -468,9 +468,9 @@ function EditProfileModal({ onClose }: { onClose: () => void }) {
                 onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
                 className="w-full bg-abyss-900 border border-moonlight-700 text-bone-200 font-body px-4 py-3 rounded-lg focus:outline-none focus:border-cursedflame-700 transition-colors"
               >
-                <option value="男性">男性</option>
-                <option value="女性">女性</option>
-                <option value="不明">不明</option>
+                <option value="male">男性</option>
+                <option value="female">女性</option>
+                <option value="unknown">不明</option>
               </select>
             </div>
           </div>

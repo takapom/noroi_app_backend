@@ -9,6 +9,7 @@ interface CurseButtonProps {
   disabled?: boolean;
   variant?: 'primary' | 'secondary';
   className?: string;
+  type?: 'button' | 'submit' | 'reset';
 }
 
 export default function CurseButton({
@@ -17,6 +18,7 @@ export default function CurseButton({
   disabled = false,
   variant = 'primary',
   className = '',
+  type = 'button',
 }: CurseButtonProps) {
   const baseClasses =
     'relative px-8 py-4 font-display font-bold text-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed';
@@ -41,6 +43,7 @@ export default function CurseButton({
 
   return (
     <motion.button
+      type={type}
       onClick={onClick}
       disabled={disabled}
       className={`${baseClasses} ${variantClasses[variant]} ${className}`}

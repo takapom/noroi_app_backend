@@ -13,7 +13,7 @@ interface PostModalProps {
 export default function PostModal({ isOpen, onClose, onPost }: PostModalProps) {
   const [content, setContent] = useState('');
   const [isAnonymous, setIsAnonymous] = useState(true);
-  const maxLength = 500;
+  const maxLength = 300;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

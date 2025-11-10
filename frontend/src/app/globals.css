@@ -1,0 +1,83 @@
+@import "tailwindcss";
+
+:root {
+  /* Gothic Horror Color Palette */
+  /* Abyss - Deep Black Base */
+  --abyss-950: #0a0a0a;
+  --abyss-900: #1a1614;
+  --abyss-800: #2d2520;
+  --abyss-700: #3f352d;
+
+  /* Bloodstain - Accent/Curse Red */
+  --bloodstain-900: #4a0e0e;
+  --bloodstain-800: #6b1515;
+  --bloodstain-700: #8b1e1e;
+  --bloodstain-600: #a52a2a;
+  --bloodstain-500: #c74040;
+
+  /* Bone - Sepia Text */
+  --bone-100: #f5f1e8;
+  --bone-200: #e8dcc8;
+  --bone-300: #d4c4a8;
+  --bone-400: #b8a688;
+  --bone-500: #8f7d5f;
+
+  /* Cursed Flame - Mystical Green */
+  --cursedflame-900: #1a2e1a;
+  --cursedflame-800: #2d4a2d;
+  --cursedflame-700: #3d5e3d;
+  --cursedflame-600: #4a7c4a;
+  --cursedflame-500: #5a9a5a;
+
+  /* Moonlight - UI Borders/Silver */
+  --moonlight-800: #3a3a3a;
+  --moonlight-700: #4a4a4a;
+  --moonlight-600: #6a6a6a;
+  --moonlight-400: #9a9a9a;
+}
+
+@theme inline {
+  /* Color Tokens */
+  --color-abyss-950: var(--abyss-950);
+  --color-abyss-900: var(--abyss-900);
+  --color-abyss-800: var(--abyss-800);
+  --color-abyss-700: var(--abyss-700);
+
+  --color-bloodstain-900: var(--bloodstain-900);
+  --color-bloodstain-800: var(--bloodstain-800);
+  --color-bloodstain-700: var(--bloodstain-700);
+  --color-bloodstain-600: var(--bloodstain-600);
+  --color-bloodstain-500: var(--bloodstain-500);
+
+  --color-bone-100: var(--bone-100);
+  --color-bone-200: var(--bone-200);
+  --color-bone-300: var(--bone-300);
+  --color-bone-400: var(--bone-400);
+  --color-bone-500: var(--bone-500);
+
+  --color-cursedflame-900: var(--cursedflame-900);
+  --color-cursedflame-800: var(--cursedflame-800);
+  --color-cursedflame-700: var(--cursedflame-700);
+  --color-cursedflame-600: var(--cursedflame-600);
+  --color-cursedflame-500: var(--cursedflame-500);
+
+  --color-moonlight-800: var(--moonlight-800);
+  --color-moonlight-700: var(--moonlight-700);
+  --color-moonlight-600: var(--moonlight-600);
+  --color-moonlight-400: var(--moonlight-400);
+
+  /* Font Families */
+  --font-display: 'Cinzel Decorative', serif;
+  --font-mystical: 'IM Fell English', serif;
+  --font-body: 'Noto Serif JP', serif;
+  --font-accent: 'UnifrakturMaguntia', cursive;
+}
+
+body {
+  background: var(--abyss-900);
+  color: var(--bone-300);
+  font-family: var(--font-body);
+  line-height: 1.8;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

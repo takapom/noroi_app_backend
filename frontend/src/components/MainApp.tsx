@@ -9,6 +9,7 @@ import Ranking from './ranking/Ranking';
 import Profile from './profile/Profile';
 import PostModal from './PostModal';
 import Settings from './settings/Settings';
+import { apiClient } from '@/lib/api';
 
 type TabType = 'timeline' | 'ritual' | 'ranking' | 'profile';
 
@@ -66,18 +67,26 @@ export default function MainApp() {
   const nextRitualTime = new Date();
   nextRitualTime.setHours(nextRitualTime.getHours() + 2);
 
-  const handlePost = (content: string) => {
-    console.log('New post:', content);
-    alert('呪詛ハ刻マレタリ...');
+  const handlePost = async (content: string) => {
+    try {
+      await apiClient.createPost(content, true);
+      setIsPostModalOpen(false);
+      // Reload timeline by triggering re-render
+      window.location.reload();
+    } catch (error) {
+      console.error('Post creation error:', error);
+      alert('投稿に失敗しました');
+    }
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('juheki_user');
+    apiClient.logout();
     window.location.reload(); // Reload to go back to login screen
   };
 
-  const handleDeleteAccount = () => {
-    localStorage.removeItem('juheki_user');
+  const handleDeleteAccount = async () => {
+    // TODO: Implement API call when backend endpoint is ready
+    apiClient.logout();
     alert('アカウントは完全に削除されました...');
     window.location.reload();
   };

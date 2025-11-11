@@ -1,6 +1,9 @@
 package handler
 
 import (
+	"bytes"
+	"fmt"
+	"io"
 	"net/http"
 	"noroi/internal/handler/middleware"
 	"noroi/internal/usecase"
@@ -40,9 +43,7 @@ func (h *PostHandler) GetTimeline(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"posts": posts,
-	})
+	c.JSON(http.StatusOK, posts)
 }
 
 // CreatePost handles creating a new post
@@ -54,11 +55,20 @@ func (h *PostHandler) CreatePost(c *gin.Context) {
 		return
 	}
 
+	// Read raw body for debugging
+	bodyBytes, _ := c.GetRawData()
+	c.Request.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
+
+	fmt.Printf("DEBUG: Received POST /posts request body: %s\n", string(bodyBytes))
+
 	var input usecase.CreatePostInput
 	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request body"})
+		fmt.Printf("DEBUG: JSON binding error: %v\n", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request body", "details": err.Error()})
 		return
 	}
+
+	fmt.Printf("DEBUG: Parsed input - Content: %s, IsAnonymous: %v\n", input.Content, input.IsAnonymous)
 
 	post, err := h.postUsecase.CreatePost(c.Request.Context(), userID, input)
 	if err != nil {

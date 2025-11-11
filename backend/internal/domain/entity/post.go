@@ -17,6 +17,7 @@ const (
 type Post struct {
 	ID            uuid.UUID
 	UserID        uuid.UUID
+	Username      string
 	Content       value.PostContent
 	PostType      PostType
 	IsAnonymous   bool
@@ -28,15 +29,16 @@ type Post struct {
 	DeletedAt     *time.Time
 }
 
-func NewPost(userID uuid.UUID, content value.PostContent, postType PostType, isAnonymous bool) (*Post, error) {
+func NewPost(userID uuid.UUID, username string, content value.PostContent, postType PostType, isAnonymous bool) (*Post, error) {
 	if postType != PostTypeNormal && postType != PostTypeRitual {
 		return nil, errors.ErrInvalidPostType
 	}
-	
+
 	now := time.Now()
 	return &Post{
 		ID:          uuid.New(),
 		UserID:      userID,
+		Username:    username,
 		Content:     content,
 		PostType:    postType,
 		IsAnonymous: isAnonymous,

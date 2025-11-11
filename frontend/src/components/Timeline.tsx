@@ -1,58 +1,104 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import CurseCard from './CurseCard';
+import { apiClient, type Post } from '@/lib/api';
 
-// Mock data for development
-const MOCK_POSTS = [
-  {
-    id: '1',
-    username: '@呪術師A',
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=1',
-    timestamp: '2時間前',
-    content: '今日も理不尽な上司に振り回された...この怒りを炎に変えて、業火で焼き尽くしてやりたい。',
-    likeCount: 12,
-    commentCount: 3,
-    isLiked: false,
-  },
-  {
-    id: '2',
-    username: '@闇の詠唱者',
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=2',
-    timestamp: '5時間前',
-    content: '約束を破る人間が多すぎる。氷の呪縛で永遠に閉じ込めてやりたい気分だ。',
-    likeCount: 24,
-    commentCount: 7,
-    isLiked: true,
-  },
-  {
-    id: '3',
-    username: '@古き契約者',
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=3',
-    timestamp: '8時間前',
-    content: 'マナー違反の人々よ、お前たちの傲慢さに呪いあれ。',
-    likeCount: 8,
-    commentCount: 2,
-    isLiked: false,
-  },
-];
+function formatTimestamp(dateString: string): string {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffMins = Math.floor(diffMs / 60000);
+
+  if (diffMins < 60) {
+    return `${diffMins}分前`;
+  }
+
+  const diffHours = Math.floor(diffMins / 60);
+  if (diffHours < 24) {
+    return `${diffHours}時間前`;
+  }
+
+  const diffDays = Math.floor(diffHours / 24);
+  return `${diffDays}日前`;
+}
 
 export default function Timeline() {
-  const [posts, setPosts] = useState(MOCK_POSTS);
+  const [posts, setPosts] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState('');
 
-  const handleLike = (id: string) => {
+  useEffect(() => {
+    loadPosts();
+  }, []);
+
+  const loadPosts = async () => {
+    setIsLoading(true);
+    setError('');
+
+    try {
+      const fetchedPosts = await apiClient.getPosts(20, 0);
+
+      // Transform backend posts to frontend format
+      const transformedPosts = fetchedPosts.map((post: Post) => ({
+        id: post.id,
+        username: post.is_anonymous ? '@匿名の呪術師' : `@${post.username}`,
+        avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${post.user_id}`,
+        timestamp: formatTimestamp(post.created_at),
+        content: post.content,
+        likeCount: post.curse_count,
+        commentCount: 0, // TODO: Implement comments later
+        isLiked: post.is_cursed_by_me,
+      }));
+
+      setPosts(transformedPosts);
+    } catch (err) {
+      setError('投稿の読み込みに失敗しました');
+      console.error('Failed to load posts:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleLike = async (id: string) => {
+    const post = posts.find((p) => p.id === id);
+    if (!post) return;
+
+    // Optimistic update
     setPosts((prevPosts) =>
-      prevPosts.map((post) =>
-        post.id === id
+      prevPosts.map((p) =>
+        p.id === id
           ? {
-              ...post,
-              isLiked: !post.isLiked,
-              likeCount: post.isLiked ? post.likeCount - 1 : post.likeCount + 1,
+              ...p,
+              isLiked: !p.isLiked,
+              likeCount: p.isLiked ? p.likeCount - 1 : p.likeCount + 1,
             }
-          : post
+          : p
       )
     );
+
+    try {
+      if (post.isLiked) {
+        await apiClient.uncursePost(id);
+      } else {
+        await apiClient.cursePost(id);
+      }
+    } catch (err) {
+      // Revert on error
+      setPosts((prevPosts) =>
+        prevPosts.map((p) =>
+          p.id === id
+            ? {
+                ...p,
+                isLiked: post.isLiked,
+                likeCount: post.likeCount,
+              }
+            : p
+        )
+      );
+      console.error('Failed to update curse:', err);
+    }
   };
 
   return (
@@ -74,29 +120,50 @@ export default function Timeline() {
 
       {/* Timeline Content */}
       <main className="max-w-4xl mx-auto px-4 py-6">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
-        >
-          {posts.map((post, index) => (
-            <motion.div
-              key={post.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
-            >
-              <CurseCard post={post} onLike={handleLike} />
-            </motion.div>
-          ))}
-        </motion.div>
+        {error && (
+          <div className="mb-4 p-4 bg-bloodstain-900 border border-bloodstain-700 rounded-lg">
+            <p className="font-body text-bloodstain-500 text-center">{error}</p>
+          </div>
+        )}
+
+        {isLoading ? (
+          <div className="text-center py-12">
+            <p className="font-body text-bone-500">呪詛を読み込み中...</p>
+          </div>
+        ) : posts.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="font-body text-bone-500">まだ呪詛はありません</p>
+          </div>
+        ) : (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+          >
+            {posts.map((post, index) => (
+              <motion.div
+                key={post.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+              >
+                <CurseCard post={post} onLike={handleLike} />
+              </motion.div>
+            ))}
+          </motion.div>
+        )}
 
         {/* Load More */}
-        <div className="text-center py-8">
-          <button className="text-bone-400 font-mystical hover:text-bone-200 transition-colors">
-            ─── さらなる呪いを読み込む ───
-          </button>
-        </div>
+        {!isLoading && posts.length > 0 && (
+          <div className="text-center py-8">
+            <button
+              onClick={loadPosts}
+              className="text-bone-400 font-mystical hover:text-bone-200 transition-colors"
+            >
+              ─── さらなる呪いを読み込む ───
+            </button>
+          </div>
+        )}
       </main>
 
       {/* Floating Action Button */}

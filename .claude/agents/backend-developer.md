@@ -1,7 +1,7 @@
 ---
 name: backend-developer
 description: Use this agent when the user needs to develop, modify, or maintain backend functionality for the project described in /Users/yuki.takagi/Desktop/noroi/README.md. This includes API development, database operations, server-side logic, authentication, data processing, and backend architecture tasks.\n\nExamples:\n- User: "README.mdに書かれているユーザー認証機能を実装してください"\n  Assistant: "バックエンドの実装が必要ですので、backend-developer agentを使用します"\n  \n- User: "データベーススキーマを設計して、マイグレーションファイルを作成したい"\n  Assistant: "backend-developer agentを起動して、データベース設計とマイグレーションファイルの作成を行います"\n  \n- User: "APIエンドポイントのパフォーマンスを改善したい"\n  Assistant: "backend-developer agentを使用して、APIのパフォーマンス最適化を実施します"\n  \n- User: "新しい機能のためのREST APIを作成してください"\n  Assistant: "Task toolを使用してbackend-developer agentを起動し、REST APIの設計と実装を行います"
-model: opus
+model: sonnet
 color: green
 ---
 

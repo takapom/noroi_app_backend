@@ -204,6 +204,107 @@
 [9] 検索画面
 キーワード入力で呪いを検索し、結果を一覧表示する。
 
+---
 
+### **7. データベース確認コマンド**
 
+#### **PostgreSQLへの接続**
 
+```bash
+# Docker経由でPostgreSQLに接続
+docker exec -it noroi_db psql -U noroi -d noroi_db
+```
+
+#### **基本的なデータ確認コマンド**
+
+```sql
+-- テーブル一覧の表示
+\dt
+
+-- 特定のテーブル構造の確認
+\d users
+\d posts
+\d curse_styles
+\d curses
+\d rituals
+\d ritual_participants
+\d rankings
+
+-- 全ユーザーの確認
+SELECT id, email, username, age, gender, points, created_at FROM users;
+
+-- 呪癖スタイル一覧
+SELECT * FROM curse_styles;
+
+-- 全投稿の確認
+SELECT id, username, content, curse_count, created_at
+FROM posts
+WHERE deleted_at IS NULL
+ORDER BY created_at DESC
+LIMIT 10;
+
+-- 怨念（いいね）の確認
+SELECT c.id, u.username, p.content
+FROM curses c
+JOIN users u ON c.user_id = u.id
+JOIN posts p ON c.post_id = p.id
+ORDER BY c.created_at DESC
+LIMIT 10;
+
+-- ユーザーごとの投稿数
+SELECT username, COUNT(*) as post_count
+FROM posts
+WHERE deleted_at IS NULL
+GROUP BY username
+ORDER BY post_count DESC;
+
+-- 最も怨念を集めた投稿
+SELECT id, username, content, curse_count
+FROM posts
+WHERE deleted_at IS NULL
+ORDER BY curse_count DESC
+LIMIT 10;
+
+-- 特定ユーザーの情報
+SELECT u.*, cs.name as curse_style_name
+FROM users u
+LEFT JOIN curse_styles cs ON u.curse_style_id = cs.id
+WHERE u.email = 'test@example.com';
+
+-- データベース接続の終了
+\q
+```
+
+#### **テストデータの削除**
+
+```bash
+# 全データを削除してリセット（開発時のみ）
+docker exec -it noroi_db psql -U noroi -d noroi_db -c "
+TRUNCATE users, posts, curses, rituals, ritual_participants, rankings CASCADE;
+"
+
+# 特定ユーザーの削除
+docker exec -it noroi_db psql -U noroi -d noroi_db -c "
+DELETE FROM users WHERE email = 'test@example.com';
+"
+```
+
+#### **データベース統計情報**
+
+```bash
+# ワンライナーで各テーブルのレコード数を確認
+docker exec -it noroi_db psql -U noroi -d noroi_db -c "
+SELECT
+  'users' as table_name, COUNT(*) as count FROM users
+UNION ALL
+SELECT 'posts', COUNT(*) FROM posts WHERE deleted_at IS NULL
+UNION ALL
+SELECT 'curses', COUNT(*) FROM curses
+UNION ALL
+SELECT 'rituals', COUNT(*) FROM rituals
+UNION ALL
+SELECT 'rankings', COUNT(*) FROM rankings;
+"
+```
+
+---

@@ -5,13 +5,16 @@ import SplashScreen from '@/components/SplashScreen';
 import LoginForm from '@/components/LoginForm';
 import RegisterForm from '@/components/RegisterForm';
 import MainApp from '@/components/MainApp';
+import { apiClient } from '@/lib/api';
 
 type AppState = 'splash' | 'login' | 'register' | 'timeline';
 
 export default function AuthWrapper() {
   const [appState, setAppState] = useState<AppState>('splash');
+  const [error, setError] = useState<string>('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Check if user is already logged in (in real app, check localStorage/session)
+  // Check if user is already logged in
   useEffect(() => {
     const isLoggedIn = localStorage.getItem('juheki_user');
     if (isLoggedIn && appState === 'splash') {
@@ -25,20 +28,34 @@ export default function AuthWrapper() {
     setAppState(isLoggedIn ? 'timeline' : 'login');
   };
 
-  const handleLogin = (email: string, password: string) => {
-    // In real app, make API call to authenticate
-    console.log('Login:', { email, password });
-    // Mock login
-    localStorage.setItem('juheki_user', JSON.stringify({ email }));
-    setAppState('timeline');
+  const handleLogin = async (email: string, password: string) => {
+    setIsLoading(true);
+    setError('');
+
+    try {
+      await apiClient.login(email, password);
+      setAppState('timeline');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'ログインに失敗しました');
+      console.error('Login error:', err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleRegister = (data: any) => {
-    // In real app, make API call to register
-    console.log('Register:', data);
-    // Mock registration
-    localStorage.setItem('juheki_user', JSON.stringify(data));
-    setAppState('timeline');
+  const handleRegister = async (data: any) => {
+    setIsLoading(true);
+    setError('');
+
+    try {
+      await apiClient.register(data);
+      setAppState('timeline');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : '登録に失敗しました');
+      console.error('Register error:', err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -47,19 +64,43 @@ export default function AuthWrapper() {
 
       {appState === 'login' && (
         <div className="min-h-screen flex items-center justify-center p-4">
-          <LoginForm
-            onLogin={handleLogin}
-            onSwitchToRegister={() => setAppState('register')}
-          />
+          <div className="w-full">
+            {error && (
+              <div className="max-w-md mx-auto mb-4 p-4 bg-bloodstain-900 border border-bloodstain-700 rounded-lg">
+                <p className="font-body text-bloodstain-500 text-center">{error}</p>
+              </div>
+            )}
+            <LoginForm
+              onLogin={handleLogin}
+              onSwitchToRegister={() => setAppState('register')}
+            />
+            {isLoading && (
+              <div className="text-center mt-4">
+                <p className="font-body text-bone-500">読み込み中...</p>
+              </div>
+            )}
+          </div>
         </div>
       )}
 
       {appState === 'register' && (
         <div className="min-h-screen flex items-center justify-center p-4">
-          <RegisterForm
-            onRegister={handleRegister}
-            onSwitchToLogin={() => setAppState('login')}
-          />
+          <div className="w-full">
+            {error && (
+              <div className="max-w-md mx-auto mb-4 p-4 bg-bloodstain-900 border border-bloodstain-700 rounded-lg">
+                <p className="font-body text-bloodstain-500 text-center">{error}</p>
+              </div>
+            )}
+            <RegisterForm
+              onRegister={handleRegister}
+              onSwitchToLogin={() => setAppState('login')}
+            />
+            {isLoading && (
+              <div className="text-center mt-4">
+                <p className="font-body text-bone-500">読み込み中...</p>
+              </div>
+            )}
+          </div>
         </div>
       )}
 

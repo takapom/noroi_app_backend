@@ -23,13 +23,13 @@ func NewPostRepository(db *sql.DB) repository.PostRepository {
 func (r *postRepository) Create(ctx context.Context, post *entity.Post) error {
 	query := `
 		INSERT INTO posts (
-			id, user_id, content, post_type, is_anonymous,
+			id, user_id, username, content, post_type, is_anonymous,
 			ritual_id, curse_count, is_deleted, created_at, updated_at
-		) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+		) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
 	`
 	_, err := r.db.ExecContext(
 		ctx, query,
-		post.ID, post.UserID, post.Content.String(), post.PostType,
+		post.ID, post.UserID, post.Username, post.Content.String(), post.PostType,
 		post.IsAnonymous, post.RitualID, post.CurseCount,
 		post.IsDeleted, post.CreatedAt, post.UpdatedAt,
 	)
@@ -42,7 +42,7 @@ func (r *postRepository) Create(ctx context.Context, post *entity.Post) error {
 func (r *postRepository) FindByID(ctx context.Context, id uuid.UUID) (*entity.Post, error) {
 	query := `
 		SELECT
-			id, user_id, content, post_type, is_anonymous,
+			id, user_id, username, content, post_type, is_anonymous,
 			ritual_id, curse_count, is_deleted, created_at, updated_at, deleted_at
 		FROM posts
 		WHERE id = $1
@@ -53,7 +53,7 @@ func (r *postRepository) FindByID(ctx context.Context, id uuid.UUID) (*entity.Po
 	var deletedAt sql.NullTime
 
 	err := r.db.QueryRowContext(ctx, query, id).Scan(
-		&post.ID, &post.UserID, &content, &post.PostType,
+		&post.ID, &post.UserID, &post.Username, &content, &post.PostType,
 		&post.IsAnonymous, &ritualID, &post.CurseCount,
 		&post.IsDeleted, &post.CreatedAt, &post.UpdatedAt, &deletedAt,
 	)
@@ -87,7 +87,7 @@ func (r *postRepository) FindByID(ctx context.Context, id uuid.UUID) (*entity.Po
 func (r *postRepository) FindTimeline(ctx context.Context, offset, limit int, currentUserID uuid.UUID) ([]*repository.PostWithUser, error) {
 	query := `
 		SELECT
-			p.id, p.user_id, p.content, p.post_type, p.is_anonymous,
+			p.id, p.user_id, p.username, p.content, p.post_type, p.is_anonymous,
 			p.ritual_id, p.curse_count, p.is_deleted, p.created_at, p.updated_at, p.deleted_at,
 			u.id, u.email, u.password_hash, u.username, u.age, u.gender,
 			u.curse_style_id, u.points, u.profile_public, u.notify_curse,
@@ -114,7 +114,7 @@ func (r *postRepository) FindTimeline(ctx context.Context, offset, limit int, cu
 		var isLiked bool
 
 		err := rows.Scan(
-			&post.ID, &post.UserID, &content, &post.PostType, &post.IsAnonymous,
+			&post.ID, &post.UserID, &post.Username, &content, &post.PostType, &post.IsAnonymous,
 			&postRitualID, &post.CurseCount, &post.IsDeleted, &post.CreatedAt, &post.UpdatedAt, &postDeletedAt,
 			&user.ID, &email, &passwordHash, &user.Username, &user.Age, &user.Gender,
 			&user.CurseStyleID, &user.Points, &user.ProfilePublic, &user.NotifyCurse,
@@ -159,7 +159,7 @@ func (r *postRepository) FindTimeline(ctx context.Context, offset, limit int, cu
 func (r *postRepository) FindByUserID(ctx context.Context, userID uuid.UUID, offset, limit int) ([]*entity.Post, error) {
 	query := `
 		SELECT
-			id, user_id, content, post_type, is_anonymous,
+			id, user_id, username, content, post_type, is_anonymous,
 			ritual_id, curse_count, is_deleted, created_at, updated_at, deleted_at
 		FROM posts
 		WHERE user_id = $1 AND is_deleted = FALSE
@@ -180,7 +180,7 @@ func (r *postRepository) FindByUserID(ctx context.Context, userID uuid.UUID, off
 		var deletedAt sql.NullTime
 
 		err := rows.Scan(
-			&post.ID, &post.UserID, &content, &post.PostType,
+			&post.ID, &post.UserID, &post.Username, &content, &post.PostType,
 			&post.IsAnonymous, &ritualID, &post.CurseCount,
 			&post.IsDeleted, &post.CreatedAt, &post.UpdatedAt, &deletedAt,
 		)

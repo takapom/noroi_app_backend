@@ -14,15 +14,18 @@ import (
 type PostUsecase struct {
 	postRepo  repository.PostRepository
 	curseRepo repository.CurseRepository
+	userRepo  repository.UserRepository
 }
 
 func NewPostUsecase(
 	postRepo repository.PostRepository,
 	curseRepo repository.CurseRepository,
+	userRepo repository.UserRepository,
 ) *PostUsecase {
 	return &PostUsecase{
 		postRepo:  postRepo,
 		curseRepo: curseRepo,
+		userRepo:  userRepo,
 	}
 }
 
@@ -37,13 +40,14 @@ type UpdatePostInput struct {
 
 type PostResponse struct {
 	ID           string `json:"id"`
+	UserID       string `json:"user_id"`
 	Username     string `json:"username"`
-	Avatar       string `json:"avatar"` // For future use
-	Timestamp    string `json:"timestamp"`
 	Content      string `json:"content"`
-	LikeCount    int    `json:"likeCount"`
-	CommentCount int    `json:"commentCount"` // Always 0 for now
-	IsLiked      bool   `json:"isLiked"`
+	PostType     string `json:"post_type"`
+	IsAnonymous  bool   `json:"is_anonymous"`
+	CurseCount   int    `json:"curse_count"`
+	IsCursedByMe bool   `json:"is_cursed_by_me"`
+	CreatedAt    string `json:"created_at"`
 }
 
 func (uc *PostUsecase) GetTimeline(ctx context.Context, currentUserID uuid.UUID, offset, limit int) ([]*PostResponse, error) {
@@ -68,13 +72,14 @@ func (uc *PostUsecase) GetTimeline(ctx context.Context, currentUserID uuid.UUID,
 
 		responses = append(responses, &PostResponse{
 			ID:           pwu.Post.ID.String(),
+			UserID:       pwu.Post.UserID.String(),
 			Username:     username,
-			Avatar:       "", // For future implementation
-			Timestamp:    formatRelativeTime(pwu.Post.CreatedAt),
 			Content:      pwu.Post.Content.String(),
-			LikeCount:    pwu.Post.CurseCount,
-			CommentCount: 0,
-			IsLiked:      pwu.IsLiked,
+			PostType:     string(pwu.Post.PostType),
+			IsAnonymous:  pwu.Post.IsAnonymous,
+			CurseCount:   pwu.Post.CurseCount,
+			IsCursedByMe: pwu.IsLiked,
+			CreatedAt:    pwu.Post.CreatedAt.Format("2006-01-02T15:04:05Z07:00"),
 		})
 	}
 
@@ -82,14 +87,20 @@ func (uc *PostUsecase) GetTimeline(ctx context.Context, currentUserID uuid.UUID,
 }
 
 func (uc *PostUsecase) CreatePost(ctx context.Context, userID uuid.UUID, input CreatePostInput) (*PostResponse, error) {
+	// Fetch user to get username
+	user, err := uc.userRepo.FindByID(ctx, userID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to find user: %w", err)
+	}
+
 	// Validate content
 	content, err := value.NewPostContent(input.Content)
 	if err != nil {
 		return nil, err
 	}
 
-	// Create post entity
-	post, err := entity.NewPost(userID, content, entity.PostTypeNormal, input.IsAnonymous)
+	// Create post entity with username
+	post, err := entity.NewPost(userID, user.Username, content, entity.PostTypeNormal, input.IsAnonymous)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create post entity: %w", err)
 	}
@@ -99,22 +110,22 @@ func (uc *PostUsecase) CreatePost(ctx context.Context, userID uuid.UUID, input C
 		return nil, fmt.Errorf("failed to save post: %w", err)
 	}
 
-	username := "匿名"
-	if !input.IsAnonymous {
-		// In a real implementation, we would fetch the user's username
-		// For now, we'll just return the post without the username
-		username = "" // This should be fetched from user repository
+	// Display username based on anonymity setting
+	displayUsername := user.Username
+	if input.IsAnonymous {
+		displayUsername = "匿名"
 	}
 
 	return &PostResponse{
 		ID:           post.ID.String(),
-		Username:     username,
-		Avatar:       "",
-		Timestamp:    formatRelativeTime(post.CreatedAt),
+		UserID:       post.UserID.String(),
+		Username:     displayUsername,
 		Content:      post.Content.String(),
-		LikeCount:    0,
-		CommentCount: 0,
-		IsLiked:      false,
+		PostType:     string(post.PostType),
+		IsAnonymous:  post.IsAnonymous,
+		CurseCount:   0,
+		IsCursedByMe: false,
+		CreatedAt:    post.CreatedAt.Format("2006-01-02T15:04:05Z07:00"),
 	}, nil
 }
 

@@ -22,7 +22,7 @@ func NewRouter(db *sql.DB) *gin.Engine {
 
 	// Initialize use cases
 	authUsecase := usecase.NewAuthUsecase(userRepo, curseStyleRepo, jwtManager)
-	postUsecase := usecase.NewPostUsecase(postRepo, curseRepo, userRepo)
+	postUsecase := usecase.NewPostUsecase(postRepo, curseRepo, userRepo, curseStyleRepo)
 	curseUsecase := usecase.NewCurseUsecase(postRepo, curseRepo)
 	userUsecase := usecase.NewUserUsecase(userRepo, curseStyleRepo, postRepo)
 

@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { useState } from 'react';
+import RitualStyleBadge, { RitualStyle } from './RitualStyleBadge';
 
 interface CursePost {
   id: string;
@@ -13,6 +14,7 @@ interface CursePost {
   commentCount: number;
   isLiked: boolean;
   isOwnPost?: boolean;
+  ritualStyle?: RitualStyle; // 新しく追加: ユーザーの呪癖スタイル
 }
 
 interface CurseCardProps {
@@ -38,21 +40,63 @@ export default function CurseCard({ post, onLike }: CurseCardProps) {
         boxShadow: '0 4px 16px rgba(139, 30, 30, 0.2)',
       }}
     >
-      {/* Header */}
-      <div className="flex items-center mb-3 pb-2 border-b border-moonlight-700">
-        <img
-          src={post.avatar}
-          alt=""
-          className="w-10 h-10 border-2 border-moonlight-600 grayscale-50"
-        />
+      {/* Header with Ritual Style Badge */}
+      <div className="flex items-start mb-3 pb-2 border-b border-moonlight-700">
+        {/* Avatar with ritual style glow effect */}
+        <div className="relative">
+          <img
+            src={post.avatar}
+            alt=""
+            className="w-10 h-10 border-2 border-moonlight-600 grayscale-50"
+          />
+          {/* Ritual style indicator dot on avatar */}
+          {post.ritualStyle && (
+            <div className="absolute -bottom-1 -right-1">
+              <RitualStyleBadge
+                style={post.ritualStyle}
+                variant="icon"
+                animate={isHovered}
+              />
+            </div>
+          )}
+        </div>
+
         <div className="ml-3 flex-1">
+          {/* Username */}
           <p className="font-body font-medium text-bone-200 text-sm">
             {post.username}
           </p>
-          <p className="font-body font-light text-bone-500 text-xs">
+
+          {/* Ritual Style Badge - Main Display */}
+          {post.ritualStyle && (
+            <div className="my-1">
+              <RitualStyleBadge
+                style={post.ritualStyle}
+                variant="compact"
+                showLatin={true}
+                animate={isHovered}
+              />
+            </div>
+          )}
+
+          {/* Timestamp */}
+          <p className="font-body font-light text-bone-500 text-xs mt-1">
             {post.timestamp}
           </p>
         </div>
+
+        {/* Optional: Gothic ritual symbol in corner */}
+        {post.ritualStyle && (
+          <motion.div
+            className="text-moonlight-700/30 text-lg font-accent"
+            animate={isHovered ? {
+              rotate: [0, 5, -5, 0],
+              transition: { duration: 2, repeat: Infinity }
+            } : {}}
+          >
+            ✠
+          </motion.div>
+        )}
       </div>
 
       {/* Content */}
@@ -87,11 +131,31 @@ export default function CurseCard({ post, onLike }: CurseCardProps) {
         </button>
       </div>
 
-      {/* Corner decorations */}
-      <div className="absolute top-0 left-0 w-2 h-2 border-t-2 border-l-2 border-bloodstain-800 opacity-30" />
-      <div className="absolute top-0 right-0 w-2 h-2 border-t-2 border-r-2 border-bloodstain-800 opacity-30" />
-      <div className="absolute bottom-0 left-0 w-2 h-2 border-b-2 border-l-2 border-bloodstain-800 opacity-30" />
-      <div className="absolute bottom-0 right-0 w-2 h-2 border-b-2 border-r-2 border-bloodstain-800 opacity-30" />
+      {/* Corner decorations - Enhanced with ritual style color if present */}
+      <div className={`
+        absolute top-0 left-0 w-2 h-2 border-t-2 border-l-2
+        ${post.ritualStyle ? 'border-bloodstain-700' : 'border-bloodstain-800'}
+        ${post.ritualStyle ? 'opacity-50' : 'opacity-30'}
+        transition-opacity duration-300
+      `} />
+      <div className={`
+        absolute top-0 right-0 w-2 h-2 border-t-2 border-r-2
+        ${post.ritualStyle ? 'border-bloodstain-700' : 'border-bloodstain-800'}
+        ${post.ritualStyle ? 'opacity-50' : 'opacity-30'}
+        transition-opacity duration-300
+      `} />
+      <div className={`
+        absolute bottom-0 left-0 w-2 h-2 border-b-2 border-l-2
+        ${post.ritualStyle ? 'border-bloodstain-700' : 'border-bloodstain-800'}
+        ${post.ritualStyle ? 'opacity-50' : 'opacity-30'}
+        transition-opacity duration-300
+      `} />
+      <div className={`
+        absolute bottom-0 right-0 w-2 h-2 border-b-2 border-r-2
+        ${post.ritualStyle ? 'border-bloodstain-700' : 'border-bloodstain-800'}
+        ${post.ritualStyle ? 'opacity-50' : 'opacity-30'}
+        transition-opacity duration-300
+      `} />
     </motion.div>
   );
 }

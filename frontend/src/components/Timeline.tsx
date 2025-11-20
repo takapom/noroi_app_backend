@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import CurseCard from './CurseCard';
 import { ToastContainer, type ToastType } from './Toast';
 import { apiClient, type Post } from '@/lib/api';
+import { mapCurseStyleNameToRitualStyle } from '@/lib/ritualStyleMapper';
 
 interface ToastMessage {
   id: string;
@@ -78,6 +79,8 @@ export default function Timeline() {
         commentCount: 0, // TODO: Implement comments later
         isLiked: post.is_cursed_by_me,
         isOwnPost: currentUserId === post.user_id,
+        // 呪癖スタイル情報をマッピング
+        ritualStyle: mapCurseStyleNameToRitualStyle(post.curse_style_name),
       }));
 
       setPosts(transformedPosts);

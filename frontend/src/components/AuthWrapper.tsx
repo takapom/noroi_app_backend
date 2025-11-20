@@ -16,11 +16,24 @@ export default function AuthWrapper() {
 
   // Check if user is already logged in
   useEffect(() => {
-    const isLoggedIn = localStorage.getItem('juheki_user');
-    if (isLoggedIn && appState === 'splash') {
-      // Skip to timeline if already logged in
-      setTimeout(() => setAppState('timeline'), 3500);
-    }
+    const checkAuth = async () => {
+      const isLoggedIn = localStorage.getItem('juheki_user');
+      if (isLoggedIn && appState === 'splash') {
+        // Verify token is still valid
+        try {
+          await apiClient.getProfile();
+          // Token is valid, skip to timeline
+          setTimeout(() => setAppState('timeline'), 3500);
+        } catch (err) {
+          // Token is invalid, clear storage and show login
+          localStorage.removeItem('access_token');
+          localStorage.removeItem('refresh_token');
+          localStorage.removeItem('juheki_user');
+          setTimeout(() => setAppState('login'), 3500);
+        }
+      }
+    };
+    checkAuth();
   }, [appState]);
 
   const handleSplashComplete = () => {

@@ -24,6 +24,10 @@ interface Post {
   curse_count: number;
   is_cursed_by_me: boolean;
   created_at: string;
+  // 呪癖スタイル情報
+  curse_style_name: string;
+  curse_style_name_en: string;
+  curse_style_description: string;
 }
 
 interface CurseStyle {
@@ -91,6 +95,13 @@ class ApiClient {
               localStorage.setItem('refresh_token', data.refresh_token);
               // Retry original request
               throw new Error('TOKEN_REFRESHED');
+            } else {
+              // Refresh token is invalid, clear storage and logout
+              localStorage.removeItem('access_token');
+              localStorage.removeItem('refresh_token');
+              localStorage.removeItem('juheki_user');
+              window.location.href = '/';
+              throw new Error('Session expired');
             }
           } catch (error) {
             // Refresh failed, logout
@@ -98,7 +109,14 @@ class ApiClient {
             localStorage.removeItem('refresh_token');
             localStorage.removeItem('juheki_user');
             window.location.href = '/';
+            throw new Error('Session expired');
           }
+        } else {
+          // No refresh token available, clear storage and logout
+          localStorage.removeItem('access_token');
+          localStorage.removeItem('refresh_token');
+          localStorage.removeItem('juheki_user');
+          window.location.href = '/';
         }
         throw new Error('Unauthorized');
       }

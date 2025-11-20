@@ -43,14 +43,14 @@ export default function ProfileContent({ user, posts }: ProfileContentProps) {
           {/* Weathering effect */}
           <div className="absolute inset-0 rounded-full opacity-30">
             <svg className="w-full h-full">
-              <circle cx="50%" cy="50%" r="45%" fill="none" stroke="#3a3a3a" strokeWidth="2" strokeDasharray="5,5"/>
+              <circle cx="50%" cy="50%" r="45%" fill="none" stroke="#3a3a3a" strokeWidth="2" strokeDasharray="5,5" />
             </svg>
           </div>
         </div>
 
         {/* Avatar image */}
         <div className="relative w-full h-full rounded-full overflow-hidden border-2 border-abyss-950 shadow-2xl">
-          <img src={user.avatar} alt="avatar" className="w-full h-full object-cover grayscale-[30%]"/>
+          <img src={user.avatar} alt="avatar" className="w-full h-full object-cover grayscale-[30%]" />
         </div>
 
         {/* Corner decoration */}
@@ -76,11 +76,10 @@ export default function ProfileContent({ user, posts }: ProfileContentProps) {
         ].map((stat) => (
           <div
             key={stat.label}
-            className={`bg-abyss-700 border-2 ${
-              stat.color === 'bloodstain-500'
-                ? 'border-bloodstain-500/30 hover:border-bloodstain-500 shadow-[0_0_15px_rgba(199,64,64,0.2)]'
-                : 'border-moonlight-600/30 hover:border-moonlight-600'
-            } rounded-lg p-4 text-center transition-colors`}
+            className={`bg-abyss-700 border-2 ${stat.color === 'bloodstain-500'
+              ? 'border-bloodstain-500/30 hover:border-bloodstain-500 shadow-[0_0_15px_rgba(199,64,64,0.2)]'
+              : 'border-moonlight-600/30 hover:border-moonlight-600'
+              } rounded-lg p-4 text-center transition-colors`}
           >
             <div className={`font-display text-3xl text-${stat.color} mb-2 tabular-nums`}>
               {stat.value.toLocaleString()}
@@ -95,7 +94,6 @@ export default function ProfileContent({ user, posts }: ProfileContentProps) {
       {/* Personal Info Section */}
       <div className="border-t-2 border-dashed border-moonlight-600/30 pt-6 mb-6">
         <h3 className="font-body text-bone-500 text-lg mb-4 flex items-center gap-2">
-          <span className="font-accent text-2xl">個</span>
           個人情報
         </h3>
         <div className="bg-abyss-700/50 rounded-lg p-4 space-y-3 font-body">
@@ -119,7 +117,6 @@ export default function ProfileContent({ user, posts }: ProfileContentProps) {
       {/* Post History Section */}
       <div className="border-t-2 border-dashed border-moonlight-600/30 pt-6">
         <h3 className="font-body text-bone-500 text-lg mb-4 flex items-center gap-2">
-          <span className="font-accent text-2xl">記</span>
           投稿履歴
         </h3>
 

@@ -103,7 +103,11 @@ func (r *postRepository) FindTimeline(ctx context.Context, offset, limit int, cu
 	if err != nil {
 		return nil, fmt.Errorf("failed to find timeline: %w", err)
 	}
-	defer rows.Close()
+	defer func() {
+		if err := rows.Close(); err != nil {
+			fmt.Printf("failed to close rows: %v\n", err)
+		}
+	}()
 
 	var results []*repository.PostWithUser
 	for rows.Next() {
@@ -170,7 +174,11 @@ func (r *postRepository) FindByUserID(ctx context.Context, userID uuid.UUID, off
 	if err != nil {
 		return nil, fmt.Errorf("failed to find posts by user ID: %w", err)
 	}
-	defer rows.Close()
+	defer func() {
+		if err := rows.Close(); err != nil {
+			fmt.Printf("failed to close rows: %v\n", err)
+		}
+	}()
 
 	var posts []*entity.Post
 	for rows.Next() {

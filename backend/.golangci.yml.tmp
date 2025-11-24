@@ -1,0 +1,22 @@
+# golangci-lint 設定ファイル
+run:
+  timeout: 5m
+  tests: true
+
+linters:
+  enable:
+    - errcheck
+    - govet
+    - staticcheck
+    - unused
+    - ineffassign
+    - misspell
+    - revive
+    - gosec
+    - goconst
+    - gocyclo
+    - bodyclose
+
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0

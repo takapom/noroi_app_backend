@@ -22,7 +22,7 @@ func NewConfig() *Config {
 		Host:     getEnv("DB_HOST", "localhost"),
 		Port:     getEnv("DB_PORT", "5432"),
 		User:     getEnv("DB_USER", "noroi"),
-		Password:     getEnv("DB_PASSWORD", "noroi_password"),
+		Password: getEnv("DB_PASSWORD", "noroi_password"),
 		DBName:   getEnv("DB_NAME", "noroi_db"),
 	}
 }

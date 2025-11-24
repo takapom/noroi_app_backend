@@ -57,15 +57,15 @@ type UserPostResponse struct {
 }
 
 type UserProfileResponse struct {
-	ID         string                 `json:"id"`
-	Email      string                 `json:"email"`
-	Username   string                 `json:"username"`
-	Age        int                    `json:"age"`
-	Gender     string                 `json:"gender"`
-	CurseStyle *CurseStyleResponse    `json:"curse_style"`
-	Points     int                    `json:"points"`
-	Stats      *UserStatsResponse     `json:"stats"`
-	CreatedAt  string                 `json:"created_at"`
+	ID         string              `json:"id"`
+	Email      string              `json:"email"`
+	Username   string              `json:"username"`
+	Age        int                 `json:"age"`
+	Gender     string              `json:"gender"`
+	CurseStyle *CurseStyleResponse `json:"curse_style"`
+	Points     int                 `json:"points"`
+	Stats      *UserStatsResponse  `json:"stats"`
+	CreatedAt  string              `json:"created_at"`
 }
 
 func (uc *UserUsecase) GetProfile(ctx context.Context, userID uuid.UUID) (*UserProfileResponse, error) {

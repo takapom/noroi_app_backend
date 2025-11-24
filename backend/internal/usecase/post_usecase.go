@@ -7,7 +7,6 @@ import (
 	"noroi/internal/domain/value"
 	"noroi/internal/repository"
 	"sync"
-	"time"
 
 	"github.com/google/uuid"
 	"golang.org/x/sync/errgroup"
@@ -82,7 +81,7 @@ func (uc *PostUsecase) GetTimeline(ctx context.Context, currentUserID uuid.UUID,
 
 	// ========================================
 	// ステップ2: ユニークなcurse_style_idを抽出（メモリ操作のみ）
-	// 例): styleIDs := [A, B, C, D, E] 
+	// 例): styleIDs := [A, B, C, D, E]
 	// ========================================
 	styleIDSet := make(map[uuid.UUID]bool)
 	for _, pwu := range postsWithUser {
@@ -99,13 +98,13 @@ func (uc *PostUsecase) GetTimeline(ctx context.Context, currentUserID uuid.UUID,
 	// ステップ3: 呪癖スタイル情報を並行取得（goroutine使用）
 	// ========================================
 	styleMap := make(map[uuid.UUID]*entity.CurseStyle)
-	var mu sync.Mutex 
+	var mu sync.Mutex
 
 	g, gctx := errgroup.WithContext(ctx)
 
 	// 各呪癖スタイルIDに対してgoroutineを起動
 	for _, styleID := range styleIDs {
-		styleID := styleID 
+		styleID := styleID
 
 		g.Go(func() error {
 			// DBから呪癖スタイル情報を取得
@@ -248,31 +247,4 @@ func (uc *PostUsecase) DeletePost(ctx context.Context, postID, userID uuid.UUID)
 	}
 
 	return nil
-}
-
-// formatRelativeTime converts a timestamp to relative time (e.g., "2時間前")
-func formatRelativeTime(t time.Time) string {
-	now := time.Now()
-	diff := now.Sub(t)
-
-	if diff < time.Minute {
-		return "たった今"
-	} else if diff < time.Hour {
-		minutes := int(diff.Minutes())
-		return fmt.Sprintf("%d分前", minutes)
-	} else if diff < 24*time.Hour {
-		hours := int(diff.Hours())
-		return fmt.Sprintf("%d時間前", hours)
-	} else if diff < 7*24*time.Hour {
-		days := int(diff.Hours() / 24)
-		return fmt.Sprintf("%d日前", days)
-	} else if diff < 30*24*time.Hour {
-		weeks := int(diff.Hours() / 24 / 7)
-		return fmt.Sprintf("%d週間前", weeks)
-	} else if diff < 365*24*time.Hour {
-		months := int(diff.Hours() / 24 / 30)
-		return fmt.Sprintf("%dヶ月前", months)
-	}
-	years := int(diff.Hours() / 24 / 365)
-	return fmt.Sprintf("%d年前", years)
 }

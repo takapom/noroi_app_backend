@@ -1,8 +1,8 @@
 package entity
 
 import (
-	"time"
 	"github.com/google/uuid"
+	"time"
 )
 
 type CurseStyle struct {

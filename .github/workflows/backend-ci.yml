@@ -1,43 +1,33 @@
-# バックエンドCI/CDワークフロー
-# このファイルは、Goアプリケーションの自動テスト・ビルド・デプロイを管理します
-
 name: Backend CI/CD
 
 # ワークフローの実行タイミングを定義
 on:
-  # プルリクエストが作成・更新されたとき
   pull_request:
     paths:
-      - 'backend/**'  # backendディレクトリ内のファイルが変更された場合のみ
-      - '.github/workflows/backend-ci.yml'  # このワークフロー自体が変更された場合
+      - "backend/**"
+      - ".github/workflows/backend-ci.yml"
     branches:
       - main
       - develop
 
-  # mainブランチにpushされたとき
   push:
     paths:
-      - 'backend/**'
-      - '.github/workflows/backend-ci.yml'
+      - "backend/**"
+      - ".github/workflows/backend-ci.yml"
     branches:
       - main
 
-  # 手動でワークフローを実行できるようにする
   workflow_dispatch:
 
-# 環境変数の設定（全ジョブで共通）
 env:
-  GO_VERSION: '1.23.0'  # go.modで指定されているバージョン
-  POSTGRES_VERSION: '16'
+  GO_VERSION: "1.23.0"
+  POSTGRES_VERSION: "16"
 
 # 実行するジョブ（タスク）を定義
 jobs:
-  # ========================================
-  # ジョブ1: コードの静的解析とフォーマットチェック
-  # ========================================
   lint:
     name: Lint and Format Check
-    runs-on: ubuntu-latest  # Ubuntu環境で実行
+    runs-on: ubuntu-latest
 
     steps:
       # ステップ1: リポジトリのコードをチェックアウト（取得）
@@ -49,7 +39,7 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version: ${{ env.GO_VERSION }}
-          cache-dependency-path: backend/go.sum  # 依存関係のキャッシュ
+          cache-dependency-path: backend/go.sum # 依存関係のキャッシュ
 
       # ステップ3: Goのフォーマットチェック（gofmt）
       - name: Check Go formatting
@@ -144,10 +134,10 @@ jobs:
         with:
           files: ./backend/coverage.out
           flags: backend
-          fail_ci_if_error: false  # カバレッジアップロード失敗でもCI全体は失敗させない
+          fail_ci_if_error: false # カバレッジアップロード失敗でもCI全体は失敗させない
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-        continue-on-error: true  # このステップが失敗してもワークフローは継続
+        continue-on-error: true # このステップが失敗してもワークフローは継続
 
   # ========================================
   # ジョブ3: ビルドの確認
@@ -155,7 +145,7 @@ jobs:
   build:
     name: Build Application
     runs-on: ubuntu-latest
-    needs: [lint, test]  # lintとtestが成功したら実行
+    needs: [lint, test] # lintとtestが成功したら実行
 
     steps:
       # ステップ1: コードのチェックアウト
@@ -184,7 +174,7 @@ jobs:
         with:
           name: backend-binaries
           path: backend/bin/*
-          retention-days: 7  # 7日間保持
+          retention-days: 7 # 7日間保持
 
   # ========================================
   # ジョブ4: Dockerイメージのビルド（mainブランチのみ）
@@ -192,7 +182,7 @@ jobs:
   docker:
     name: Build and Push Docker Image
     runs-on: ubuntu-latest
-    needs: [build]  # ビルドが成功したら実行
+    needs: [build] # ビルドが成功したら実行
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     steps:
@@ -248,7 +238,7 @@ jobs:
       - name: Run Gosec Security Scanner
         uses: securego/gosec@master
         with:
-          args: '-no-fail -fmt sarif -out results.sarif ./backend/...'
+          args: "-no-fail -fmt sarif -out results.sarif ./backend/..."
         continue-on-error: true
 
       # ステップ4: スキャン結果をGitHub Security タブにアップロード

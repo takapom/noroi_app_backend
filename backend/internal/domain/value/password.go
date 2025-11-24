@@ -1,8 +1,8 @@
 package value
 
 import (
-	"noroi/pkg/errors"
 	"golang.org/x/crypto/bcrypt"
+	"noroi/pkg/errors"
 )
 
 type Password struct {
@@ -13,12 +13,12 @@ func NewPassword(plainPassword string) (Password, error) {
 	if len(plainPassword) < 8 {
 		return Password{}, errors.ErrPasswordTooShort
 	}
-	
+
 	hashed, err := bcrypt.GenerateFromPassword([]byte(plainPassword), bcrypt.DefaultCost)
 	if err != nil {
 		return Password{}, err
 	}
-	
+
 	return Password{hashedValue: string(hashed)}, nil
 }
 

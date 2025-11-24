@@ -9,9 +9,9 @@ import (
 
 // PostWithUser represents a post with user information for timeline display
 type PostWithUser struct {
-	Post     *entity.Post
-	User     *entity.User
-	IsLiked  bool // whether the current authenticated user has cursed this post
+	Post    *entity.Post
+	User    *entity.User
+	IsLiked bool // whether the current authenticated user has cursed this post
 }
 
 type PostRepository interface {

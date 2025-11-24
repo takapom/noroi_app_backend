@@ -1,10 +1,10 @@
 package entity
 
 import (
-	"time"
+	"github.com/google/uuid"
 	"noroi/internal/domain/value"
 	"noroi/pkg/errors"
-	"github.com/google/uuid"
+	"time"
 )
 
 type PostType string
@@ -15,18 +15,18 @@ const (
 )
 
 type Post struct {
-	ID            uuid.UUID
-	UserID        uuid.UUID
-	Username      string
-	Content       value.PostContent
-	PostType      PostType
-	IsAnonymous   bool
-	RitualID      *uuid.UUID // イベント投稿の場合のみ
-	CurseCount    int
-	IsDeleted     bool
-	CreatedAt     time.Time
-	UpdatedAt     time.Time
-	DeletedAt     *time.Time
+	ID          uuid.UUID
+	UserID      uuid.UUID
+	Username    string
+	Content     value.PostContent
+	PostType    PostType
+	IsAnonymous bool
+	RitualID    *uuid.UUID // イベント投稿の場合のみ
+	CurseCount  int
+	IsDeleted   bool
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
+	DeletedAt   *time.Time
 }
 
 func NewPost(userID uuid.UUID, username string, content value.PostContent, postType PostType, isAnonymous bool) (*Post, error) {
@@ -61,7 +61,7 @@ func (p *Post) UpdateContent(content value.PostContent, editorID uuid.UUID) erro
 	if p.IsDeleted {
 		return errors.ErrCannotEditPost
 	}
-	
+
 	p.Content = content
 	p.UpdatedAt = time.Now()
 	return nil
@@ -74,7 +74,7 @@ func (p *Post) Delete(deleterID uuid.UUID) error {
 	if p.IsDeleted {
 		return errors.ErrCannotDeletePost
 	}
-	
+
 	now := time.Now()
 	p.IsDeleted = true
 	p.DeletedAt = &now

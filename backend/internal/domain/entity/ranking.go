@@ -1,8 +1,8 @@
 package entity
 
 import (
-	"time"
 	"github.com/google/uuid"
+	"time"
 )
 
 type RankingPeriod string
@@ -14,16 +14,16 @@ const (
 )
 
 type Ranking struct {
-	ID         uuid.UUID
-	UserID     uuid.UUID
-	Period     RankingPeriod
-	Rank       int
-	CurseCount int
-	PostCount  int
+	ID          uuid.UUID
+	UserID      uuid.UUID
+	Period      RankingPeriod
+	Rank        int
+	CurseCount  int
+	PostCount   int
 	PeriodStart time.Time
 	PeriodEnd   *time.Time
-	CreatedAt  time.Time
-	UpdatedAt  time.Time
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
 }
 
 func NewRanking(userID uuid.UUID, period RankingPeriod, rank, curseCount, postCount int, periodStart time.Time) *Ranking {

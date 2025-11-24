@@ -13,14 +13,14 @@ type PostContent struct {
 func NewPostContent(content string) (PostContent, error) {
 	content = strings.TrimSpace(content)
 	length := utf8.RuneCountInString(content)
-	
+
 	if length < 10 {
 		return PostContent{}, errors.ErrPostTooShort
 	}
 	if length > 300 {
 		return PostContent{}, errors.ErrPostTooLong
 	}
-	
+
 	return PostContent{value: content}, nil
 }
 

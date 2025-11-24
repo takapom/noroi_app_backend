@@ -12,9 +12,9 @@ import (
 )
 
 type AuthUsecase struct {
-	userRepo        repository.UserRepository
-	curseStyleRepo  repository.CurseStyleRepository
-	jwtManager      *jwt.Manager
+	userRepo       repository.UserRepository
+	curseStyleRepo repository.CurseStyleRepository
+	jwtManager     *jwt.Manager
 }
 
 func NewAuthUsecase(

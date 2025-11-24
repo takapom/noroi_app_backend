@@ -1,9 +1,9 @@
 package entity
 
 import (
-	"time"
-	"noroi/pkg/errors"
 	"github.com/google/uuid"
+	"noroi/pkg/errors"
+	"time"
 )
 
 type Curse struct {
@@ -19,7 +19,7 @@ func NewCurse(userID, postID uuid.UUID, post *Post) (*Curse, error) {
 	if post.UserID == userID {
 		return nil, errors.ErrCannotCurseSelf
 	}
-	
+
 	return &Curse{
 		ID:        uuid.New(),
 		UserID:    userID,

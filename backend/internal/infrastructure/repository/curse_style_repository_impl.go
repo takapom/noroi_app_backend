@@ -30,7 +30,11 @@ func (r *curseStyleRepository) FindAll(ctx context.Context) ([]*entity.CurseStyl
 	if err != nil {
 		return nil, fmt.Errorf("failed to find all curse styles: %w", err)
 	}
-	defer rows.Close()
+	defer func() {
+		if err := rows.Close(); err != nil {
+			fmt.Printf("failed to close rows: %v\n", err)
+		}
+	}()
 
 	var styles []*entity.CurseStyle
 	for rows.Next() {
@@ -110,7 +114,11 @@ func (r *curseStyleRepository) FindBasicStyles(ctx context.Context) ([]*entity.C
 	if err != nil {
 		return nil, fmt.Errorf("failed to find basic curse styles: %w", err)
 	}
-	defer rows.Close()
+	defer func() {
+		if err := rows.Close(); err != nil {
+			fmt.Printf("failed to close rows: %v\n", err)
+		}
+	}()
 
 	var styles []*entity.CurseStyle
 	for rows.Next() {

@@ -1,9 +1,9 @@
 package entity
 
 import (
-	"time"
-	"noroi/internal/domain/value"
 	"github.com/google/uuid"
+	"noroi/internal/domain/value"
+	"time"
 )
 
 type Gender string
@@ -15,21 +15,21 @@ const (
 )
 
 type User struct {
-	ID              uuid.UUID
-	Email           value.Email
-	Password        value.Password
-	Username        string
-	Age             int
-	Gender          Gender
-	CurseStyleID    uuid.UUID
-	Points          int
-	ProfilePublic   bool
-	NotifyCurse     bool
-	NotifyRitual    bool
-	IsDeleted       bool
-	CreatedAt       time.Time
-	UpdatedAt       time.Time
-	DeletedAt       *time.Time
+	ID            uuid.UUID
+	Email         value.Email
+	Password      value.Password
+	Username      string
+	Age           int
+	Gender        Gender
+	CurseStyleID  uuid.UUID
+	Points        int
+	ProfilePublic bool
+	NotifyCurse   bool
+	NotifyRitual  bool
+	IsDeleted     bool
+	CreatedAt     time.Time
+	UpdatedAt     time.Time
+	DeletedAt     *time.Time
 }
 
 func NewUser(email value.Email, password value.Password, username string, age int, gender Gender, curseStyleID uuid.UUID) *User {

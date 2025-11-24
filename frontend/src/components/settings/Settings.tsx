@@ -1,8 +1,8 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useState } from 'react';
-import CurseButton from '../CurseButton';
+import { useState, useEffect } from 'react';
+import { apiClient } from '@/lib/api';
 
 interface SettingsProps {
   onBack: () => void;
@@ -11,20 +11,29 @@ interface SettingsProps {
 }
 
 export default function Settings({ onBack, onLogout, onDeleteAccount }: SettingsProps) {
-  const [notificationSettings, setNotificationSettings] = useState({
-    curseNotification: true,
-    ritualNotification: true,
-  });
   const [privacySettings, setPrivacySettings] = useState({
     publicProfile: true,
   });
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [showEditProfile, setShowEditProfile] = useState(false);
+  const [userEmail, setUserEmail] = useState<string>('');
+  const [loading, setLoading] = useState(true);
 
-  const toggleNotification = (key: keyof typeof notificationSettings) => {
-    setNotificationSettings((prev) => ({ ...prev, [key]: !prev[key] }));
-  };
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const profile = await apiClient.getProfile();
+        setUserEmail(profile.email);
+      } catch (error) {
+        console.error('Failed to fetch profile:', error);
+        setUserEmail('Error loading email');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserProfile();
+  }, []);
 
   return (
     <div className="min-h-screen bg-abyss-950 relative overflow-hidden">
@@ -51,45 +60,13 @@ export default function Settings({ onBack, onLogout, onDeleteAccount }: Settings
         </div>
 
         <div className="max-w-2xl mx-auto space-y-6">
-          {/* Profile Section */}
-          <Section title="プロフィール" icon="👤">
-            <SettingItem
-              label="プロフィール編集"
-              description="ニックネーム、年齢、性別、呪癖を編集"
-              onClick={() => setShowEditProfile(true)}
-              actionLabel="編集"
-            />
-          </Section>
-
           {/* Account Section */}
           <Section title="アカウント" icon="🔐">
             <SettingItem
               label="メールアドレス"
-              value="user@example.com"
+              value={loading ? 'Loading...' : userEmail}
               onClick={() => console.log('Edit email')}
               actionLabel="変更"
-            />
-            <SettingItem
-              label="パスワード"
-              value="••••••••"
-              onClick={() => console.log('Change password')}
-              actionLabel="変更"
-            />
-          </Section>
-
-          {/* Notification Section */}
-          <Section title="通知設定" icon="🔔">
-            <ToggleItem
-              label="怨念通知"
-              description="投稿に怨念がついた時に通知"
-              enabled={notificationSettings.curseNotification}
-              onToggle={() => toggleNotification('curseNotification')}
-            />
-            <ToggleItem
-              label="儀式開始通知"
-              description="焼滅の儀が始まる時に通知"
-              enabled={notificationSettings.ritualNotification}
-              onToggle={() => toggleNotification('ritualNotification')}
             />
           </Section>
 
@@ -118,7 +95,7 @@ export default function Settings({ onBack, onLogout, onDeleteAccount }: Settings
               level="medium"
             />
             <DangerItem
-              label="アカウント削除"
+              label="アカウント削除(未実装)"
               description="全てのデータが完全に削除されます"
               onClick={() => setShowDeleteConfirm(true)}
               level="extreme"
@@ -155,11 +132,6 @@ export default function Settings({ onBack, onLogout, onDeleteAccount }: Settings
           onCancel={() => setShowDeleteConfirm(false)}
           danger="extreme"
         />
-      )}
-
-      {/* Edit Profile Modal */}
-      {showEditProfile && (
-        <EditProfileModal onClose={() => setShowEditProfile(false)} />
       )}
     </div>
   );
@@ -238,9 +210,8 @@ function ToggleItem({
       </div>
       <button onClick={onToggle} className="relative">
         <div
-          className={`w-12 h-6 rounded-full transition-colors ${
-            enabled ? 'bg-cursedflame-700' : 'bg-moonlight-700'
-          }`}
+          className={`w-12 h-6 rounded-full transition-colors ${enabled ? 'bg-cursedflame-700' : 'bg-moonlight-700'
+            }`}
         >
           <motion.div
             className="w-5 h-5 bg-bone-100 rounded-full m-0.5"
@@ -295,11 +266,10 @@ function DangerItem({
         onClick={onClick}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        className={`px-4 py-2 border rounded-lg transition-all text-sm font-body ${
-          level === 'extreme'
+        className={`px-4 py-2 border rounded-lg transition-all text-sm font-body ${level === 'extreme'
             ? 'bg-bloodstain-800 border-bloodstain-600 text-bone-100 hover:bg-bloodstain-700 shadow-[0_0_15px_rgba(199,64,64,0.4)]'
             : 'bg-bloodstain-900 border-bloodstain-700 text-bloodstain-500 hover:bg-bloodstain-800 hover:text-bone-100'
-        }`}
+          }`}
       >
         {label}
       </motion.button>
@@ -370,138 +340,23 @@ function ConfirmDialog({
             animate={
               danger === 'extreme'
                 ? {
-                    boxShadow: [
-                      '0 0 15px rgba(199,64,64,0.4)',
-                      '0 0 25px rgba(199,64,64,0.7)',
-                      '0 0 15px rgba(199,64,64,0.4)',
-                    ],
-                  }
+                  boxShadow: [
+                    '0 0 15px rgba(199,64,64,0.4)',
+                    '0 0 25px rgba(199,64,64,0.7)',
+                    '0 0 15px rgba(199,64,64,0.4)',
+                  ],
+                }
                 : {}
             }
             transition={danger === 'extreme' ? { duration: 2, repeat: Infinity } : {}}
-            className={`flex-1 px-4 py-3 border rounded-lg transition-all font-body ${
-              danger === 'extreme'
+            className={`flex-1 px-4 py-3 border rounded-lg transition-all font-body ${danger === 'extreme'
                 ? 'bg-bloodstain-700 border-bloodstain-600 text-bone-100'
                 : 'bg-bloodstain-800 border-bloodstain-700 text-bone-200'
-            }`}
+              }`}
           >
             {confirmLabel}
           </motion.button>
         </div>
-      </motion.div>
-    </>
-  );
-}
-
-// Edit Profile Modal Component
-function EditProfileModal({ onClose }: { onClose: () => void }) {
-  const [formData, setFormData] = useState({
-    username: '@current_user',
-    age: '25',
-    gender: '不明',
-    bio: '深夜に必ず鏡を見てしまう。その度に何かが変わっている気がする。',
-  });
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log('Save profile:', formData);
-    onClose();
-  };
-
-  return (
-    <>
-      {/* Backdrop */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        onClick={onClose}
-        className="fixed inset-0 bg-black bg-opacity-80 z-50 backdrop-blur-sm"
-      />
-
-      {/* Modal */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9, y: 50 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.9, y: 50 }}
-        className="fixed inset-x-4 top-1/2 -translate-y-1/2 max-w-lg mx-auto bg-abyss-800 border-2 border-moonlight-700 z-50 p-6 rounded-lg max-h-[80vh] overflow-y-auto"
-      >
-        <div className="flex items-center justify-between mb-6 pb-4 border-b border-moonlight-700">
-          <h2 className="font-display text-2xl text-bone-100">プロフィール編集</h2>
-          <button
-            onClick={onClose}
-            className="text-bone-400 hover:text-bone-100 transition-colors text-2xl"
-          >
-            ✕
-          </button>
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block font-body text-bone-400 text-sm mb-2">
-              <span className="text-bloodstain-700">⟨</span>
-              ユーザー名
-              <span className="text-bloodstain-700">⟩</span>
-            </label>
-            <input
-              type="text"
-              value={formData.username}
-              onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-              className="w-full bg-abyss-900 border border-moonlight-700 text-bone-200 font-body px-4 py-3 rounded-lg focus:outline-none focus:border-cursedflame-700 transition-colors"
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block font-body text-bone-400 text-sm mb-2">年齢</label>
-              <input
-                type="number"
-                value={formData.age}
-                onChange={(e) => setFormData({ ...formData, age: e.target.value })}
-                className="w-full bg-abyss-900 border border-moonlight-700 text-bone-200 font-body px-4 py-3 rounded-lg focus:outline-none focus:border-cursedflame-700 transition-colors"
-              />
-            </div>
-            <div>
-              <label className="block font-body text-bone-400 text-sm mb-2">性別</label>
-              <select
-                value={formData.gender}
-                onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
-                className="w-full bg-abyss-900 border border-moonlight-700 text-bone-200 font-body px-4 py-3 rounded-lg focus:outline-none focus:border-cursedflame-700 transition-colors"
-              >
-                <option value="male">男性</option>
-                <option value="female">女性</option>
-                <option value="unknown">不明</option>
-              </select>
-            </div>
-          </div>
-
-          <div>
-            <label className="block font-body text-bone-400 text-sm mb-2">
-              <span className="text-bloodstain-700">⟨</span>
-              呪癖（一行説明）
-              <span className="text-bloodstain-700">⟩</span>
-            </label>
-            <textarea
-              value={formData.bio}
-              onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-              rows={3}
-              className="w-full bg-abyss-900 border border-moonlight-700 text-bone-200 font-body px-4 py-3 rounded-lg focus:outline-none focus:border-cursedflame-700 transition-colors resize-none"
-            />
-          </div>
-
-          <div className="flex gap-4 pt-4">
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex-1 px-4 py-3 bg-abyss-700 border border-moonlight-700 text-bone-300 rounded-lg hover:bg-abyss-600 transition-colors font-body"
-            >
-              キャンセル
-            </button>
-            <CurseButton type="submit" className="flex-1">
-              保存
-            </CurseButton>
-          </div>
-        </form>
       </motion.div>
     </>
   );

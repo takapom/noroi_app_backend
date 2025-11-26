@@ -1,13 +1,9 @@
 'use client';
 
-import { motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 export default function SplashScreen({ onComplete }: { onComplete: () => void }) {
-  const [showFlame, setShowFlame] = useState(false);
-
   useEffect(() => {
-    setShowFlame(true);
     const timer = setTimeout(() => {
       onComplete();
     }, 3500);
@@ -15,20 +11,9 @@ export default function SplashScreen({ onComplete }: { onComplete: () => void })
   }, [onComplete]);
 
   return (
-    <motion.div
-      className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-gradient-to-b from-abyss-950 to-abyss-900"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 1 }}
-    >
+    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-gradient-to-b from-abyss-950 to-abyss-900">
       {/* Church Silhouette */}
-      <motion.div
-        className="absolute top-0 left-0 right-0 h-1/3"
-        initial={{ opacity: 0, y: -50 }}
-        animate={{ opacity: 0.4, y: 0 }}
-        transition={{ duration: 1, delay: 0.5 }}
-      >
+      <div className="absolute top-0 left-0 right-0 h-1/3 opacity-40">
         <svg
           viewBox="0 0 800 300"
           className="w-full h-full"
@@ -43,55 +28,27 @@ export default function SplashScreen({ onComplete }: { onComplete: () => void })
             opacity="0.6"
           />
         </svg>
-      </motion.div>
+      </div>
 
       {/* App Title - Vertical */}
-      <motion.div
-        className="relative z-10 text-center"
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 1, delay: 1 }}
-      >
+      <div className="relative z-10 text-center">
         <h1
           className="text-7xl font-display font-black text-bone-100 tracking-wider mb-4"
           style={{ writingMode: 'vertical-rl', textOrientation: 'upright' }}
         >
           呪癖
         </h1>
-        <motion.p
-          className="font-mystical text-bone-400 text-sm tracking-widest"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.5 }}
-        >
+        <p className="font-mystical text-bone-400 text-sm tracking-widest">
           ─── JUHEKI ───
-        </motion.p>
-      </motion.div>
+        </p>
+      </div>
 
       {/* Loading Flame */}
-      {showFlame && (
-        <motion.div
-          className="absolute bottom-20"
-          initial={{ opacity: 0, scale: 0 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 2 }}
-        >
-          <motion.div
-            className="text-4xl"
-            animate={{
-              scale: [1, 1.2, 1],
-              opacity: [0.6, 1, 0.6],
-            }}
-            transition={{
-              duration: 2,
-              repeat: Infinity,
-              ease: 'easeInOut',
-            }}
-          >
-            <span className="text-cursedflame-500">🔥</span>
-          </motion.div>
-        </motion.div>
-      )}
-    </motion.div>
+      <div className="absolute bottom-20">
+        <div className="text-4xl">
+          <span className="text-cursedflame-500">🔥</span>
+        </div>
+      </div>
+    </div>
   );
 }

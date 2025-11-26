@@ -1,8 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { motion } from 'framer-motion';
-import CurseButton from './CurseButton';
+import UserIcon from './icons/UserIcon';
+import MailIcon from './icons/MailIcon';
+import LockIcon from './icons/LockIcon';
 
 interface RegisterFormProps {
   onRegister: (data: {
@@ -44,118 +45,111 @@ export default function RegisterForm({ onRegister, onSwitchToLogin }: RegisterFo
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="w-full max-w-md mx-auto p-8"
-    >
+    <div className="w-full max-w-md mx-auto px-6 py-8">
+
       {/* Header */}
-      <div className="text-center mb-8">
-        <h2 className="font-display text-3xl font-bold text-bone-100 mb-2">
-          契約ノ儀
-        </h2>
-        <p className="font-mystical text-bone-400 text-sm">
-          ─── 新たなる呪術師として ───
+      <div className="mb-6">
+        <h1 className="font-extrabold text-[36px] leading-[40px] text-contra-black mb-3">
+          Sign up
+        </h1>
+        <p className="font-medium text-[17px] leading-[24px] text-contra-black-800">
+          You have chance to create new account if you really want to.
         </p>
       </div>
 
       {/* Form */}
       <form onSubmit={handleSubmit} className="space-y-5">
-        {/* Email */}
-        <div>
-          <label className="block font-display font-normal text-sm text-bone-400 mb-2">
-            <span className="text-bloodstain-700">⟨</span>
-            メールアドレス
-            <span className="text-bloodstain-700">⟩</span>
-          </label>
-          <input
-            type="email"
-            value={formData.email}
-            onChange={(e) => updateField('email', e.target.value)}
-            className="w-full bg-abyss-800 border border-moonlight-700 border-b-2 border-b-moonlight-600 text-bone-200 font-body px-4 py-3 focus:outline-none focus:border-b-bloodstain-700 transition-colors"
-            required
-          />
-        </div>
-
         {/* Username */}
         <div>
-          <label className="block font-display font-normal text-sm text-bone-400 mb-2">
-            <span className="text-bloodstain-700">⟨</span>
-            呪名（ユーザー名）
-            <span className="text-bloodstain-700">⟩</span>
-          </label>
-          <input
-            type="text"
-            value={formData.username}
-            onChange={(e) => updateField('username', e.target.value)}
-            className="w-full bg-abyss-800 border border-moonlight-700 border-b-2 border-b-moonlight-600 text-bone-200 font-body px-4 py-3 focus:outline-none focus:border-b-bloodstain-700 transition-colors"
-            required
-          />
+          <div className="relative">
+            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-contra-black">
+              <UserIcon className="w-6 h-6" />
+            </div>
+            <input
+              type="text"
+              value={formData.username}
+              onChange={(e) => updateField('username', e.target.value)}
+              className="w-full h-14 bg-contra-white border-2 border-contra-black rounded-2xl pl-14 pr-4 text-contra-black text-[21px] font-medium leading-7 focus:outline-none focus:ring-0 placeholder:text-contra-black placeholder:opacity-100"
+              placeholder="Full Name"
+              required
+            />
+          </div>
+        </div>
+
+        {/* Email */}
+        <div>
+          <div className="relative">
+            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-contra-black">
+              <MailIcon className="w-6 h-6" />
+            </div>
+            <input
+              type="email"
+              value={formData.email}
+              onChange={(e) => updateField('email', e.target.value)}
+              className="w-full h-14 bg-contra-white border-2 border-contra-black rounded-2xl pl-14 pr-4 text-contra-black text-[21px] font-medium leading-7 focus:outline-none focus:ring-0 placeholder:text-contra-black placeholder:opacity-100"
+              placeholder="Email address"
+              required
+            />
+          </div>
         </div>
 
         {/* Password */}
         <div>
-          <label className="block font-display font-normal text-sm text-bone-400 mb-2">
-            <span className="text-bloodstain-700">⟨</span>
-            合言葉
-            <span className="text-bloodstain-700">⟩</span>
-          </label>
-          <input
-            type="password"
-            value={formData.password}
-            onChange={(e) => updateField('password', e.target.value)}
-            className="w-full bg-abyss-800 border border-moonlight-700 border-b-2 border-b-moonlight-600 text-bone-200 font-body px-4 py-3 focus:outline-none focus:border-b-bloodstain-700 transition-colors"
-            required
-          />
+          <div className="relative">
+            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-contra-black">
+              <LockIcon className="w-6 h-6" />
+            </div>
+            <input
+              type="password"
+              value={formData.password}
+              onChange={(e) => updateField('password', e.target.value)}
+              className="w-full h-14 bg-contra-white border-2 border-contra-black rounded-2xl pl-14 pr-4 text-contra-black text-[21px] font-medium leading-7 focus:outline-none focus:ring-0 placeholder:text-contra-black placeholder:opacity-100"
+              placeholder="●●●●●●●"
+              required
+            />
+          </div>
         </div>
 
         {/* Age and Gender */}
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block font-display font-normal text-sm text-bone-400 mb-2">
-              年齢
-            </label>
             <input
               type="number"
               value={formData.age}
               onChange={(e) => updateField('age', e.target.value)}
-              className="w-full bg-abyss-800 border border-moonlight-700 text-bone-200 font-body px-4 py-3 focus:outline-none focus:border-bloodstain-700 transition-colors"
+              className="w-full h-14 bg-contra-white border-2 border-contra-black rounded-2xl px-4 text-contra-black text-[21px] font-medium leading-7 focus:outline-none focus:ring-0 placeholder:text-contra-black-800"
+              placeholder="Age"
               required
             />
           </div>
           <div>
-            <label className="block font-display font-normal text-sm text-bone-400 mb-2">
-              性別
-            </label>
             <select
               value={formData.gender}
               onChange={(e) => updateField('gender', e.target.value)}
-              className="w-full bg-abyss-800 border border-moonlight-700 text-bone-200 font-body px-4 py-3 focus:outline-none focus:border-bloodstain-700 transition-colors"
+              className="w-full h-14 bg-contra-white border-2 border-contra-black rounded-2xl px-4 text-contra-black text-[21px] font-medium leading-7 focus:outline-none focus:ring-0"
               required
             >
-              <option value="">選択</option>
-              <option value="male">男性</option>
-              <option value="female">女性</option>
-              <option value="unknown">不明</option>
+              <option value="">Gender</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="unknown">Other</option>
             </select>
           </div>
         </div>
 
         {/* Curse Style */}
         <div>
-          <label className="block font-display font-normal text-sm text-bone-400 mb-2">
-            <span className="text-bloodstain-700">⟨</span>
-            呪癖（儀式のスタイル）
-            <span className="text-bloodstain-700">⟩</span>
+          <label className="block text-contra-black text-[13px] font-medium mb-2">
+            Curse Style (Optional)
           </label>
           <div className="space-y-2">
             {CURSE_STYLES.map((style) => (
               <label
                 key={style.id}
-                className={`block p-3 border cursor-pointer transition-all ${
+                className={`block p-3 border-2 cursor-pointer transition-all rounded-xl ${
                   formData.curseStyle === style.id
-                    ? 'border-bloodstain-700 bg-bloodstain-900 bg-opacity-20'
-                    : 'border-moonlight-700 hover:border-moonlight-600'
+                    ? 'border-contra-black bg-contra-yellow bg-opacity-20'
+                    : 'border-contra-black-800 border-opacity-30 hover:border-contra-black hover:border-opacity-50'
                 }`}
               >
                 <input
@@ -166,10 +160,10 @@ export default function RegisterForm({ onRegister, onSwitchToLogin }: RegisterFo
                   onChange={(e) => updateField('curseStyle', e.target.value)}
                   className="sr-only"
                 />
-                <div className="font-body text-bone-200 text-sm font-medium mb-1">
+                <div className="text-contra-black text-sm font-medium mb-1">
                   {style.name}
                 </div>
-                <div className="font-mystical text-bone-500 text-xs">
+                <div className="text-contra-black-800 text-xs">
                   {style.description}
                 </div>
               </label>
@@ -179,22 +173,28 @@ export default function RegisterForm({ onRegister, onSwitchToLogin }: RegisterFo
 
         {/* Submit */}
         <div className="pt-4">
-          <CurseButton type="submit" className="w-full">
-            契約ヲ締結スル
-          </CurseButton>
+          <button
+            type="submit"
+            className="w-full h-[60px] bg-contra-yellow border-2 border-contra-black rounded-2xl text-contra-black text-[21px] font-extrabold leading-7 hover:bg-opacity-90 transition-all shadow-[0_4px_0_0_#18191F]"
+          >
+            Sign up
+          </button>
         </div>
 
         {/* Switch to Login */}
-        <div className="text-center">
-          <button
-            type="button"
-            onClick={onSwitchToLogin}
-            className="text-bone-400 font-body text-sm hover:text-bloodstain-600 transition-colors"
-          >
-            既に契約済みの方はこちら
-          </button>
+        <div className="text-center pt-2">
+          <p className="text-[13px] font-medium leading-[18px]">
+            <span className="text-contra-black">Already have account? </span>
+            <button
+              type="button"
+              onClick={onSwitchToLogin}
+              className="text-contra-red font-bold hover:underline"
+            >
+              Go here
+            </button>
+          </p>
         </div>
       </form>
-    </motion.div>
+    </div>
   );
 }

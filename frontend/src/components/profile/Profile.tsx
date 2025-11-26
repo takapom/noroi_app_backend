@@ -24,9 +24,8 @@ interface UserPost {
 interface ProfileProps {
   user: UserProfile;
   posts: UserPost[];
-  onSettings: () => void;
 }
 
-export default function Profile({ user, posts, onSettings }: ProfileProps) {
-  return <ProfileClient user={user} posts={posts} onSettings={onSettings} />;
+export default function Profile({ user, posts }: ProfileProps) {
+  return <ProfileClient user={user} posts={posts} />;
 }

@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "呪癖",
-  description: "関わりたくないが関わってしまう人々への鬱憤を、ゴシックホラーの世界観の中で「呪い」として昇華させる匿名SNSアプリ",
+  title: "掲示板",
+  description: "就活を友達と共有しよう",
 };
 
 export default function RootLayout({

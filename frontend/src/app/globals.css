@@ -34,6 +34,21 @@
   --moonlight-700: #4a4a4a;
   --moonlight-600: #6a6a6a;
   --moonlight-400: #9a9a9a;
+
+  /* Contra Wireframe Kit Colors - for clean UI mode */
+  --contra-yellow: #FFBD12;
+  --contra-black: #18191F;
+  --contra-black-800: #474A57;
+  --contra-red: #F95A2C;
+  --contra-white: #FFFFFF;
+
+  /* Task Management Colors - for Today's Tasks UI */
+  --task-purple: #6C5CE7;
+  --task-purple-light: #A29BFE;
+  --task-orange: #FD7E14;
+  --task-bg: #F8F9FA;
+  --task-text: #2D3436;
+  --task-text-light: #636E72;
 }
 
 @theme inline {
@@ -65,6 +80,19 @@
   --color-moonlight-700: var(--moonlight-700);
   --color-moonlight-600: var(--moonlight-600);
   --color-moonlight-400: var(--moonlight-400);
+
+  --color-contra-yellow: var(--contra-yellow);
+  --color-contra-black: var(--contra-black);
+  --color-contra-black-800: var(--contra-black-800);
+  --color-contra-red: var(--contra-red);
+  --color-contra-white: var(--contra-white);
+
+  --color-task-purple: var(--task-purple);
+  --color-task-purple-light: var(--task-purple-light);
+  --color-task-orange: var(--task-orange);
+  --color-task-bg: var(--task-bg);
+  --color-task-text: var(--task-text);
+  --color-task-text-light: var(--task-text-light);
 
   /* Font Families */
   --font-display: 'Cinzel Decorative', serif;

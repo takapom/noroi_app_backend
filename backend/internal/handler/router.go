@@ -16,6 +16,8 @@ func NewRouter(db *sql.DB) *gin.Engine {
 	curseStyleRepo := repository.NewCurseStyleRepository(db)
 	postRepo := repository.NewPostRepository(db)
 	curseRepo := repository.NewCurseRepository(db)
+	companyRepo := repository.NewCompanyRepository(db)
+	applicationRepo := repository.NewApplicationRepository(db)
 
 	// Initialize JWT manager
 	jwtManager := jwt.NewManager()
@@ -25,12 +27,16 @@ func NewRouter(db *sql.DB) *gin.Engine {
 	postUsecase := usecase.NewPostUsecase(postRepo, curseRepo, userRepo, curseStyleRepo)
 	curseUsecase := usecase.NewCurseUsecase(postRepo, curseRepo)
 	userUsecase := usecase.NewUserUsecase(userRepo, curseStyleRepo, postRepo)
+	companyUsecase := usecase.NewCompanyUsecase(companyRepo)
+	applicationUsecase := usecase.NewApplicationUsecase(applicationRepo, companyRepo)
 
 	// Initialize handlers
 	authHandler := NewAuthHandler(authUsecase)
 	postHandler := NewPostHandler(postUsecase)
 	curseHandler := NewCurseHandler(curseUsecase)
 	userHandler := NewUserHandler(userUsecase)
+	companyHandler := NewCompanyHandler(companyUsecase)
+	applicationHandler := NewApplicationHandler(applicationUsecase)
 
 	// Initialize middleware
 	authMiddleware := middleware.NewAuthMiddleware(jwtManager)
@@ -83,6 +89,15 @@ func NewRouter(db *sql.DB) *gin.Engine {
 				users.PUT("/me", userHandler.UpdateProfile)
 				users.GET("/me/posts", userHandler.GetMyPosts)
 			}
+
+			// Companies routes
+			protected.GET("/companies", companyHandler.List)
+			protected.POST("/companies", companyHandler.CreateCompany)
+
+			// Applications routes
+			protected.POST("/applications", applicationHandler.Create)
+			protected.PUT("/applications/:id", applicationHandler.Update)
+
 		}
 	}
 
